@@ -8,7 +8,7 @@ const Gallery = ({ selectedImages, setSelectedImages }) => {
   const [enlargedImage, setEnlargedImage] = useState(null);
 
   useEffect(() => {
-    fetch("https://galerija-server-render.onrender.com/api/images") // Zameni https://galerija-server-render.onrender.com sa npr. https://photo-gallery-server-abc.onrender.com
+    fetch("https://galerija-server-render.onrender.com/api/images")
       .then(response => response.json())
       .then(data => setImages(data))
       .catch(error => console.error("Greška pri učitavanju slika:", error));
@@ -44,7 +44,7 @@ const Gallery = ({ selectedImages, setSelectedImages }) => {
               onChange={() => handleCheckboxChange(image)}
             />
             <img
-              src={`${"https://galerija-server-render.onrender.com"}/images/${encodeURIComponent(image)}`} // Zameni https://galerija-server-render.onrender.com
+              src={`https://galerija-server-render.onrender.com/images/${encodeURIComponent(image)}`}
               alt={image}
               className="image"
               onClick={() => handleImageClick(image)}
@@ -60,7 +60,7 @@ const Gallery = ({ selectedImages, setSelectedImages }) => {
       {enlargedImage && (
         <div className="overlay" onClick={closeEnlargedView}>
           <div className="overlay-content">
-            <img src={`${"https://galerija-server-render.onrender.com"}/images/${enlargedImage}`} alt="Enlarged view" className="enlarged-image" /> // Zameni https://galerija-server-render.onrender.com
+            <img src={`https://galerija-server-render.onrender.com/images/${enlargedImage}`} alt="Enlarged view" className="enlarged-image" />
           </div>
         </div>
       )}
@@ -114,7 +114,7 @@ const Checkout = ({ selectedImages, name }) => {
     const orderData = { name, selectedImages, paymentMethod, orderID };
     localStorage.setItem("orderData", JSON.stringify(orderData));
 
-    fetch("https://galerija-server-render.onrender.com/api/order", { // Zameni https://galerija-server-render.onrender.com
+    fetch("https://galerija-server-render.onrender.com/api/order", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -125,7 +125,7 @@ const Checkout = ({ selectedImages, name }) => {
     .then((data) => {
       console.log("Porudžbina poslata:", data);
 
-      fetch("https://galerija-server-render.onrender.com/api/print", { // Zameni https://galerija-server-render.onrender.com
+      fetch("https://galerija-server-render.onrender.com/api/print", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -140,7 +140,7 @@ const Checkout = ({ selectedImages, name }) => {
         console.error("Greška pri pokretanju štampe:", error);
       });
 
-      // Preusmeri na Confirmation stranicu unutar iste aplikacije
+      // Preusmeri na Confirmation stranicu
       navigate("/confirmation");
     })
     .catch((error) => {
@@ -171,7 +171,7 @@ const Checkout = ({ selectedImages, name }) => {
           <PayPalButtons
             style={{ layout: "horizontal", color: "blue", shape: "rect", label: "pay" }}
             createOrder={async (data, actions) => {
-              const response = await fetch("https://galerija-server-render.onrender.com/api/paypal/create-order", { // Zameni https://galerija-server-render.onrender.com
+              const response = await fetch("https://galerija-server-render.onrender.com/api/paypal/create-order", {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
@@ -182,7 +182,7 @@ const Checkout = ({ selectedImages, name }) => {
               return orderData.id;
             }}
             onApprove={async (data, actions) => {
-              const response = await fetch("https://galerija-server-render.onrender.com/api/paypal/capture-order", { // Zameni https://galerija-server-render.onrender.com
+              const response = await fetch("https://galerija-server-render.onrender.com/api/paypal/capture-order", {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
@@ -217,6 +217,9 @@ const Confirmation = () => {
       setOrderData(JSON.parse(storedData));
     }
     localStorage.removeItem("orderData");
+
+    // Zameni prethodni unos u istoriji sa početnom stranicom
+    window.history.replaceState(null, "", "/");
   }, []);
 
   const handleReturn = () => {
