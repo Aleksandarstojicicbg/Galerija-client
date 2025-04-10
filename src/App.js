@@ -8,7 +8,7 @@ const Gallery = ({ selectedImages, setSelectedImages }) => {
   const [enlargedImage, setEnlargedImage] = useState(null);
 
   useEffect(() => {
-    fetch("http://192.168.178.25:3001/api/images")
+    fetch("http://localhost:3001/api/images")
       .then(response => response.json())
       .then(data => setImages(data))
       .catch(error => console.error("Greška pri učitavanju slika:", error));
@@ -44,7 +44,7 @@ const Gallery = ({ selectedImages, setSelectedImages }) => {
               onChange={() => handleCheckboxChange(image)}
             />
             <img
-              src={`http://192.168.178.25:3001/images/${encodeURIComponent(image)}`}
+              src={`http://localhost:3001/images/${encodeURIComponent(image)}`}
               alt={image}
               className="image"
               onClick={() => handleImageClick(image)}
@@ -60,7 +60,7 @@ const Gallery = ({ selectedImages, setSelectedImages }) => {
       {enlargedImage && (
         <div className="overlay" onClick={closeEnlargedView}>
           <div className="overlay-content">
-            <img src={`http://192.168.178.25:3001/images/${enlargedImage}`} alt="Enlarged view" className="enlarged-image" />
+            <img src={`http://localhost:3001/images/${enlargedImage}`} alt="Enlarged view" className="enlarged-image" />
           </div>
         </div>
       )}
@@ -117,7 +117,7 @@ const Checkout = ({ selectedImages, name }) => {
     localStorage.setItem("orderData", JSON.stringify(orderData));
 
     // Pošalji porudžbinu na server
-    fetch("http://192.168.178.25:3001/api/order", {
+    fetch("http://localhost:3001/api/order", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -129,7 +129,7 @@ const Checkout = ({ selectedImages, name }) => {
       console.log("Porudžbina poslata:", data);
 
       // Pokreni štampu
-      fetch("http://192.168.178.25:3001/api/print", {
+      fetch("http://localhost:3001/api/print", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -181,7 +181,7 @@ const Checkout = ({ selectedImages, name }) => {
           <PayPalButtons
             style={{ layout: "horizontal", color: "blue", shape: "rect", label: "pay" }}
             createOrder={async (data, actions) => {
-              const response = await fetch("http://192.168.178.25:3001/api/paypal/create-order", {
+              const response = await fetch("http://localhost:3001/api/paypal/create-order", {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
@@ -192,7 +192,7 @@ const Checkout = ({ selectedImages, name }) => {
               return orderData.id;
             }}
             onApprove={async (data, actions) => {
-              const response = await fetch("http://192.168.178.25:3001/api/paypal/capture-order", {
+              const response = await fetch("http://localhost:3001/api/paypal/capture-order", {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
