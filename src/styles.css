@@ -168,7 +168,7 @@ h1, p {
   height: 39px;
 }
 .bg-image {
-  background-image: url(C:\Users\Marica\Pictures\galerija\src\PayPalLogo.png);
+  background-image: url(./PayPalLogo.png);
   background-size:300px 35px;
   
 } 
@@ -242,7 +242,7 @@ h1, p {
 .paypal {
   width: 100%;
   height: 50px; /* Prilagodi visinu po potrebi */
-  background-image: url("C:\Users\Marica\Pictures\galerija\src\PayPalLogo.png"); /* Ubaci odgovarajući URL slike */
+  background-image: url("./PayPalLogo.png"); /* Ubaci odgovarajući URL slike */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
