@@ -1,0 +1,3 @@
+npm install react-medium-image-zoom
+nakon kompletnog koda za firebase 
+npm install firebase
