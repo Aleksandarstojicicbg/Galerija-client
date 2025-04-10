@@ -8,7 +8,7 @@ const Gallery = ({ selectedImages, setSelectedImages }) => {
   const [enlargedImage, setEnlargedImage] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:3001/api/images")
+    fetch("https://galerija-server-render.onrender.com/api/images") // Zameni https://galerija-server-render.onrender.com sa npr. https://photo-gallery-server-abc.onrender.com
       .then(response => response.json())
       .then(data => setImages(data))
       .catch(error => console.error("Greška pri učitavanju slika:", error));
@@ -44,7 +44,7 @@ const Gallery = ({ selectedImages, setSelectedImages }) => {
               onChange={() => handleCheckboxChange(image)}
             />
             <img
-              src={`http://localhost:3001/images/${encodeURIComponent(image)}`}
+              src={`${"https://galerija-server-render.onrender.com"}/images/${encodeURIComponent(image)}`} // Zameni https://galerija-server-render.onrender.com
               alt={image}
               className="image"
               onClick={() => handleImageClick(image)}
@@ -60,7 +60,7 @@ const Gallery = ({ selectedImages, setSelectedImages }) => {
       {enlargedImage && (
         <div className="overlay" onClick={closeEnlargedView}>
           <div className="overlay-content">
-            <img src={`http://localhost:3001/images/${enlargedImage}`} alt="Enlarged view" className="enlarged-image" />
+            <img src={`${"https://galerija-server-render.onrender.com"}/images/${enlargedImage}`} alt="Enlarged view" className="enlarged-image" /> // Zameni https://galerija-server-render.onrender.com
           </div>
         </div>
       )}
@@ -112,12 +112,9 @@ const Checkout = ({ selectedImages, name }) => {
     }
 
     const orderData = { name, selectedImages, paymentMethod, orderID };
-
-    // Sačuvaj u localStorage za Confirmation stranicu
     localStorage.setItem("orderData", JSON.stringify(orderData));
 
-    // Pošalji porudžbinu na server
-    fetch("http://localhost:3001/api/order", {
+    fetch("https://galerija-server-render.onrender.com/api/order", { // Zameni https://galerija-server-render.onrender.com
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -128,8 +125,7 @@ const Checkout = ({ selectedImages, name }) => {
     .then((data) => {
       console.log("Porudžbina poslata:", data);
 
-      // Pokreni štampu
-      fetch("http://localhost:3001/api/print", {
+      fetch("https://galerija-server-render.onrender.com/api/print", { // Zameni https://galerija-server-render.onrender.com
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -144,14 +140,8 @@ const Checkout = ({ selectedImages, name }) => {
         console.error("Greška pri pokretanju štampe:", error);
       });
 
-      // Otvori Confirmation u novom tabu i zatvori trenutni
-      const confirmationWindow = window.open("/confirmation", "_blank");
-      if (confirmationWindow) {
-        window.close(); // Zatvori trenutni tab (Checkout)
-      } else {
-        alert("Molimo dozvolite popup prozore da biste videli potvrdu.");
-        navigate("/confirmation");
-      }
+      // Preusmeri na Confirmation stranicu unutar iste aplikacije
+      navigate("/confirmation");
     })
     .catch((error) => {
       console.error("Greška pri slanju porudžbine:", error);
@@ -181,7 +171,7 @@ const Checkout = ({ selectedImages, name }) => {
           <PayPalButtons
             style={{ layout: "horizontal", color: "blue", shape: "rect", label: "pay" }}
             createOrder={async (data, actions) => {
-              const response = await fetch("http://localhost:3001/api/paypal/create-order", {
+              const response = await fetch("https://galerija-server-render.onrender.com/api/paypal/create-order", { // Zameni https://galerija-server-render.onrender.com
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
@@ -192,7 +182,7 @@ const Checkout = ({ selectedImages, name }) => {
               return orderData.id;
             }}
             onApprove={async (data, actions) => {
-              const response = await fetch("http://localhost:3001/api/paypal/capture-order", {
+              const response = await fetch("https://galerija-server-render.onrender.com/api/paypal/capture-order", { // Zameni https://galerija-server-render.onrender.com
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
@@ -218,6 +208,7 @@ const Checkout = ({ selectedImages, name }) => {
 };
 
 const Confirmation = () => {
+  const navigate = useNavigate();
   const [orderData, setOrderData] = useState(null);
 
   useEffect(() => {
@@ -225,10 +216,12 @@ const Confirmation = () => {
     if (storedData) {
       setOrderData(JSON.parse(storedData));
     }
-
-    // Očisti localStorage nakon što se učita Confirmation
     localStorage.removeItem("orderData");
   }, []);
+
+  const handleReturn = () => {
+    navigate("/"); // Vraća na početnu stranicu
+  };
 
   return (
     <div className="container text-center">
@@ -242,9 +235,9 @@ const Confirmation = () => {
         ))}
       </ul>
       <div className="mt-4">
-        <a href="/" className="button bg-blue full-width" target="_self">
+        <button onClick={handleReturn} className="button bg-blue full-width">
           Povratak na galeriju
-        </a>
+        </button>
       </div>
     </div>
   );
