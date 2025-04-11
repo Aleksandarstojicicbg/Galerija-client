@@ -101,7 +101,7 @@ const Form = ({ name, setName }) => {
   );
 };
 
-const Checkout = ({ selectedImages, name }) => {
+const Checkout = ({ selectedImages, name, resetSelections }) => {
   const navigate = useNavigate();
   const total = selectedImages.length * 2;
 
@@ -140,8 +140,9 @@ const Checkout = ({ selectedImages, name }) => {
         console.error("Greška pri pokretanju štampe:", error);
       });
 
-      // Preusmeri na Confirmation stranicu
-      navigate("/confirmation");
+      // Resetuj izabrane slike i preusmeri na Confirmation sa zamjenom istorije
+      resetSelections();
+      navigate("/confirmation", { replace: true });
     })
     .catch((error) => {
       console.error("Greška pri slanju porudžbine:", error);
@@ -218,12 +219,13 @@ const Confirmation = () => {
     }
     localStorage.removeItem("orderData");
 
-    // Zameni prethodni unos u istoriji sa početnom stranicom
-    window.history.replaceState(null, "", "/");
+    // Opcionalno: Dodatno osiguranje da se ne vrati na Checkout
+    window.history.pushState(null, "", "/confirmation");
+    window.history.pushState(null, "", "/");
   }, []);
 
   const handleReturn = () => {
-    navigate("/"); // Vraća na početnu stranicu
+    navigate("/", { replace: true }); // Vraća na početnu stranicu sa zamjenom istorije
   };
 
   return (
@@ -250,12 +252,17 @@ const App = () => {
   const [selectedImages, setSelectedImages] = useState([]);
   const [name, setName] = useState("");
 
+  const resetSelections = () => {
+    setSelectedImages([]); // Resetuje izabrane slike
+    setName(""); // Opcionalno: Resetuje i ime ako želiš
+  };
+
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Gallery selectedImages={selectedImages} setSelectedImages={setSelectedImages} />} />
         <Route path="/form" element={<Form name={name} setName={setName} />} />
-        <Route path="/checkout" element={<Checkout selectedImages={selectedImages} name={name} />} />
+        <Route path="/checkout" element={<Checkout selectedImages={selectedImages} name={name} resetSelections={resetSelections} />} />
         <Route path="/confirmation" element={<Confirmation />} />
       </Routes>
     </Router>
