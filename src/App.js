@@ -140,9 +140,9 @@ const Checkout = ({ selectedImages, name, resetSelections }) => {
         console.error("Greška pri pokretanju štampe:", error);
       });
 
-      // Resetuj izabrane slike i preusmeri na Confirmation sa zamjenom istorije
+      // Resetuj izabrane slike i preusmeri na Confirmation
       resetSelections();
-      navigate("/confirmation", { replace: true });
+      navigate("/confirmation");
     })
     .catch((error) => {
       console.error("Greška pri slanju porudžbine:", error);
@@ -168,7 +168,7 @@ const Checkout = ({ selectedImages, name, resetSelections }) => {
         </button>
       </div>
       <div className="mt-4">
-        <PayPalScriptProvider options={{ "client-id": "client id", currency: "EUR" }}>
+        <PayPalScriptProvider options={{ "client-id": "Af6IBblLCyOierzsCuY4kCOlqwdh7tVFXCYiNfa9pWJ6X4O3Wx6g51ruM1XoJhk3qXguUhjkrAeGgkKT", currency: "EUR" }}>
           <PayPalButtons
             style={{ layout: "horizontal", color: "blue", shape: "rect", label: "pay" }}
             createOrder={async (data, actions) => {
@@ -219,10 +219,13 @@ const Confirmation = () => {
     }
     localStorage.removeItem("orderData");
 
-    // Osiguraj da "Back" vodi na početnu stranicu
-    window.history.pushState(null, "", "/confirmation"); // Prvo postavi /confirmation kao trenutni URL
-    window.history.pushState(null, "", "/"); // Zatim dodaj / kao sledeći unos
-  }, []);
+    // Automatski preusmeri na početnu stranicu nakon 10 sekundi (opciono)
+    const timer = setTimeout(() => {
+      navigate("/", { replace: true });
+    }, 10000);
+
+    return () => clearTimeout(timer); // Očisti tajmer ako korisnik ranije napusti stranicu
+  }, [navigate]);
 
   const handleReturn = () => {
     navigate("/", { replace: true }); // Vraća na početnu stranicu sa zamjenom istorije
