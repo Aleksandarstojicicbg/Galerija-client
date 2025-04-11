@@ -168,7 +168,7 @@ const Checkout = ({ selectedImages, name, resetSelections }) => {
         </button>
       </div>
       <div className="mt-4">
-        <PayPalScriptProvider options={{ "client-id": "Af6IBblLCyOierzsCuY4kCOlqwdh7tVFXCYiNfa9pWJ6X4O3Wx6g51ruM1XoJhk3qXguUhjkrAeGgkKT", currency: "EUR" }}>
+        <PayPalScriptProvider options={{ "client-id": "client id", currency: "EUR" }}>
           <PayPalButtons
             style={{ layout: "horizontal", color: "blue", shape: "rect", label: "pay" }}
             createOrder={async (data, actions) => {
@@ -218,6 +218,10 @@ const Confirmation = () => {
       setOrderData(JSON.parse(storedData));
     }
     localStorage.removeItem("orderData");
+
+    // Osiguraj da "Back" vodi na početnu stranicu
+    window.history.pushState(null, "", "/confirmation"); // Prvo postavi /confirmation kao trenutni URL
+    window.history.pushState(null, "", "/"); // Zatim dodaj / kao sledeći unos
   }, []);
 
   const handleReturn = () => {
