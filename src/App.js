@@ -6,13 +6,16 @@ import "./styles.css";
 const Gallery = ({ selectedImages, setSelectedImages }) => {
   const [images, setImages] = useState([]);
   const [enlargedImage, setEnlargedImage] = useState(null);
+  const [termsAccepted, setTermsAccepted] = useState(localStorage.getItem("termsAccepted") === "true");
 
   useEffect(() => {
-    fetch("https://galerija-server-render.onrender.com/api/images")
-      .then(response => response.json())
-      .then(data => setImages(data))
-      .catch(error => console.error("Greška pri učitavanju slika:", error));
-  }, []);
+    if (termsAccepted) {
+      fetch("https://galerija-server-render.onrender.com/api/images")
+        .then(response => response.json())
+        .then(data => setImages(data))
+        .catch(error => console.error("Greška pri učitavanju slika:", error));
+    }
+  }, [termsAccepted]);
 
   const handleCheckboxChange = (image) => {
     setSelectedImages((prevSelectedImages) => {
@@ -30,6 +33,50 @@ const Gallery = ({ selectedImages, setSelectedImages }) => {
   const closeEnlargedView = () => {
     setEnlargedImage(null);
   };
+
+  const acceptTerms = () => {
+    // Generiši jedinstveni ID za uređaj (jednostavan primer)
+    const deviceId = Math.random().toString(36).substring(2, 15);
+    const timestamp = new Date().toISOString();
+
+    // Pošalji podatke na server
+    fetch("https://galerija-server-render.onrender.com/api/accept-terms", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ deviceId, timestamp }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log("Uslovi prihvaćeni:", data);
+      setTermsAccepted(true);
+      localStorage.setItem("termsAccepted", "true");
+    })
+    .catch(error => console.error("Greška pri prihvatanju uslova:", error));
+  };
+
+  if (!termsAccepted) {
+    return (
+      <div className="modal-overlay">
+        <div className="modal-content">
+          <h2>Pravila korišćenja</h2>
+          <p>
+            Dobrodošli u aplikaciju za naručivanje fotografija! Korišćenjem ove aplikacije prihvatate sledeće uslove:
+            <ul>
+              <li>Naručene slike preuzimate na pultu za 30 minuta.</li>
+              <li>Plaćanje se vrši gotovinom ili preko PayPal-a.</li>
+              <li>Ne snosimo odgovornost za kašnjenja izvan naše kontrole.</li>
+            </ul>
+            Molimo vas da prihvatite pravila kako biste nastavili.
+          </p>
+          <button onClick={acceptTerms} className="button bg-blue full-width">
+            Prihvatam
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="gallery-container">
@@ -140,9 +187,8 @@ const Checkout = ({ selectedImages, name, resetSelections }) => {
         console.error("Greška pri pokretanju štampe:", error);
       });
 
-      // Resetuj izabrane slike i preusmeri na Confirmation
       resetSelections();
-      navigate("/confirmation", { replace: true });
+      navigate("/confirmation");
     })
     .catch((error) => {
       console.error("Greška pri slanju porudžbine:", error);
@@ -219,12 +265,10 @@ const Confirmation = () => {
     }
     localStorage.removeItem("orderData");
 
-    // Preusmeri na početnu stranicu nakon 10 sekundi i zameni istoriju
     const timer = setTimeout(() => {
       navigate("/", { replace: true });
     }, 10000);
 
-    // Spreči povratak na prethodne stranice
     window.addEventListener("popstate", (event) => {
       navigate("/", { replace: true });
     });
@@ -236,7 +280,7 @@ const Confirmation = () => {
   }, [navigate]);
 
   const handleReturn = () => {
-    navigate("/", { replace: true }); // Vraća na početnu stranicu sa zamjenom istorije
+    navigate("/", { replace: true });
   };
 
   return (
@@ -264,8 +308,8 @@ const App = () => {
   const [name, setName] = useState("");
 
   const resetSelections = () => {
-    setSelectedImages([]); // Resetuje izabrane slike
-    setName(""); // Resetuje i ime
+    setSelectedImages([]);
+    setName("");
   };
 
   return (
