@@ -218,10 +218,6 @@ const Confirmation = () => {
       setOrderData(JSON.parse(storedData));
     }
     localStorage.removeItem("orderData");
-
-    // Opcionalno: Dodatno osiguranje da se ne vrati na Checkout
-    window.history.pushState(null, "", "/confirmation");
-    window.history.pushState(null, "", "/");
   }, []);
 
   const handleReturn = () => {
@@ -254,7 +250,7 @@ const App = () => {
 
   const resetSelections = () => {
     setSelectedImages([]); // Resetuje izabrane slike
-    setName(""); // Opcionalno: Resetuje i ime ako želiš
+    setName(""); // Resetuje i ime
   };
 
   return (
