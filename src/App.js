@@ -142,7 +142,7 @@ const Checkout = ({ selectedImages, name, resetSelections }) => {
 
       // Resetuj izabrane slike i preusmeri na Confirmation
       resetSelections();
-      navigate("/confirmation");
+      navigate("/confirmation", { replace: true });
     })
     .catch((error) => {
       console.error("Greška pri slanju porudžbine:", error);
@@ -219,12 +219,20 @@ const Confirmation = () => {
     }
     localStorage.removeItem("orderData");
 
-    // Automatski preusmeri na početnu stranicu nakon 10 sekundi (opciono)
+    // Preusmeri na početnu stranicu nakon 10 sekundi i zameni istoriju
     const timer = setTimeout(() => {
       navigate("/", { replace: true });
     }, 10000);
 
-    return () => clearTimeout(timer); // Očisti tajmer ako korisnik ranije napusti stranicu
+    // Spreči povratak na prethodne stranice
+    window.addEventListener("popstate", (event) => {
+      navigate("/", { replace: true });
+    });
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("popstate", () => {});
+    };
   }, [navigate]);
 
   const handleReturn = () => {
